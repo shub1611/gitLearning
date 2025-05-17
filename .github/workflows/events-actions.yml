@@ -1,4 +1,4 @@
-name: Run project
+name: Events activity and filters project
 on:
   pull_request:
     types:
