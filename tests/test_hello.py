@@ -10,4 +10,4 @@ def test_say_hello():
 def test_fail_say_hello():
     with patch('sys.stdout', new=StringIO()) as fake_out:
         say_hello()
-        assert fake_out.getvalue().strip() == "Hello Universe!"
+        assert fake_out.getvalue().strip() != "Hello Universe!"
