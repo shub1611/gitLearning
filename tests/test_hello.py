@@ -1,4 +1,4 @@
-from src.hello import say_hello
+from hello import say_hello
 from unittest.mock import patch
 from io import StringIO
 
