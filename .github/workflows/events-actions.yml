@@ -5,7 +5,7 @@ on:
       - opened
   workflow_dispatch:
 jobs:
-  test:
+  test-and-start:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
