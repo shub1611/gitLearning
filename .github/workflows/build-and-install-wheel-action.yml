@@ -56,4 +56,4 @@ jobs:
 
       - name: Run app
         run: |
-          python simple_app.py
+          python src/simple_app.py
