@@ -3,6 +3,8 @@ on:
   pull_request:
     types:
       - opened
+    branches:
+      - master
   workflow_dispatch:
 jobs:
   test-and-start:

@@ -1,7 +1,8 @@
 name: Test-project
 on: 
   push:
-    branches: [feature]
+    branches:
+      - feature/** #this will only run on feature branches
 jobs:
   test:
     runs-on: ubuntu-latest

@@ -1,5 +1,11 @@
 name: Run project
-on: [push, workflow_dispatch] # Trigger on push and manually
+on: 
+  push:
+    branches:
+      - feature/** #this will only run on feature branches
+    paths-ignore:
+      - '.github/workflows/**'
+  workflow_dispatch: # Trigger manually
 jobs:
   test:
     runs-on: ubuntu-latest
