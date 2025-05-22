@@ -1,9 +1,9 @@
 name: Run reusable workflow
 # This workflow builds a wheel package and deploys it to a test environment
 on:
-  push:
-    branches:
-      - master
+  # push:
+  #   branches:
+  #     - master
   workflow_dispatch:
 jobs:
   build:
