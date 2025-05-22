@@ -12,8 +12,15 @@ on:
         required: false
         default: dist
         type: string
+    outputs:
+      artifact-path:
+        description: 'Path to the downloaded artifact'
+        value: ${{ jobs.download-artifact.outputs.downloaded-artifact-path }}
+
 jobs:
   download-artifact:
+    outputs:
+      downloaded-artifact-path: ${{ steps.artifact-path.outputs.path }}
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
@@ -23,6 +30,7 @@ jobs:
           path: ${{ inputs.path }}
       - name: List files
         run: ls -l ${{ inputs.path }}
-      - name: Output information
-        run: echo "artifact downloaded"
+      - name: set output
+        id: artifact-path
+        run: echo "path=${{ inputs.path }}" >> $GITHUB_OUTPUT
       

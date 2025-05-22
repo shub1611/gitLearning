@@ -41,9 +41,15 @@ jobs:
         with:
           name: simple-greeter
           path: src-wheel/dist/simple_greeter*.whl
-
-  deploy-and-run:
+  
+  download:
     needs: build
+    uses: ./.github/workflows/reusable-workflow.yml
+    with:
+      artifact-name: simple-greeter
+  
+  run-app:
+    needs: download
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -66,15 +72,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r devops/requirements/requirements.txt
-
-      - name: Download wheel artifact
-        uses: ./.github/workflows/reusable-workflow.yml
-        with:
-          name: simple-greeter
+      
+      - name: Print artifact path
+        run: echo "${{ needs.download.outputs.artifact-path }}"
 
       - name: Install wheel artifact
         run: |
-          python -m pip install dist/simple_greeter*.whl
+          python -m pip install ${{ needs.download.outputs.artifact-path }}/simple_greeter*.whl
 
       - name: Run app
         run: |
