@@ -16,7 +16,7 @@ inputs:
   cache-key:
     description: 'Cache key for pip dependencies'
     required: false
-    default: '${{ runner.os }}-pip-${{ hashFiles(devops/requirements/requirements.txt) }}'
+    default: '${{ runner.os }}-pip-${{ hashFiles("devops/requirements/requirements.txt") }}'
 runs:
   using: 'composite'
   steps:
