@@ -13,10 +13,6 @@ inputs:
     description: 'Path to cache directory'
     required: false
     default: '~/.cache/pip'
-  cache-key:
-    description: 'Cache key for pip dependencies'
-    required: false
-    default: '${{ runner.os }}-pip-${{ hashFiles("devops/requirements/requirements.txt") }}'
 runs:
   using: 'composite'
   steps:
@@ -24,7 +20,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ inputs.cache-path }}
-        key: ${{ inputs.cache-key }}
+        key: ${{ runner.os }}-pip-${{ hashFiles(inputs.requirements-file) }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Install dependencies
