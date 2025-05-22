@@ -7,11 +7,11 @@ runs:
       uses: actions/cache@v4
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('devops/requirements.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('devops/requirements/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r devops/requirements.txt
+        pip install -r devops/requirements/requirements.txt
       shell: bash
