@@ -16,3 +16,4 @@ src-wheel/*.egg-info/
 .idea/
 .vscode/
 .DS_Store
+test-coverage

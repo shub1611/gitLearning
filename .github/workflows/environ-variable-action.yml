@@ -33,12 +33,20 @@ jobs:
           pip install -r devops/requirements.txt
       
       - name: Run tests
+        id: run-tests
         env:
           APP_ENV: 'test'
         run: |
           # Run tests with coverage         
-          PYTHONPATH=src pytest --cov=src tests 
-
+          PYTHONPATH=src pytest --cov=src tests --cov-report=xml:test-coverage/coverage.xml --cov-report=html:test-coverage/htmlcov --cov-fail-under=70
+      
+      - name: Upload coverage report
+        if: failure() && steps.run-tests.outcome == 'failure' # Only upload if tests fail
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-coverage-report
+          path: test-coverage/
+      
       - name: Run app
         run: |
           python src/env_app.py
