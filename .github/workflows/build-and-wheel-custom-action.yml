@@ -19,7 +19,9 @@ jobs:
   
       - name: Install and Cache pip dependencies
         uses: ./.github/actions/python-dependencies
-
+        with:
+          requirements-file: devops/requirements/requirements.txt
+      
       - name: Build wheel
         run: |
           rm -rf src-wheel/dist
