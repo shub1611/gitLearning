@@ -73,15 +73,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r devops/requirements/requirements.txt
       
-      - name: Print artifact path
+      - name: Print artifact status
         run: |
-          echo "${{ needs.download.outputs.artifact-path }}"
-          ls ${{ needs.download.outputs.artifact-path }}
-
-      - name: Install wheel artifact
-        run: |
-          python -m pip install ${{ needs.download.outputs.artifact-path }}/simple_greeter*.whl
-
-      - name: Run app
-        run: |
-          python src/simple_app.py
+          echo "${{ needs.download.outputs.outcome }}"
