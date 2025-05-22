@@ -1,0 +1,28 @@
+name: Reusable workflow
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        description: 'Name of the artifact to download'
+        required: false
+        default: dist-files
+        type: string
+      path:
+        description: 'Path to the artifact'
+        required: false
+        default: dist
+        type: string
+jobs:
+  download-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ inputs.path }}
+      - name: List files
+        run: ls -l ${{ inputs.path }}
+      - name: Output information
+        run: echo "artifact downloaded"
+      

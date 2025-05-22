@@ -1,0 +1,81 @@
+name: Build and Deploy wheel package
+# This workflow builds a wheel package and deploys it to a test environment
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+  
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('devops/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r devops/requirements.txt
+
+      - name: Build wheel
+        run: |
+          rm -rf src-wheel/dist
+          cd src-wheel
+          python -m build
+ 
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: simple-greeter
+          path: src-wheel/dist/simple_greeter*.whl
+
+  deploy-and-run:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+  
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('devops/requirements/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r devops/requirements.txt
+
+      - name: Download wheel artifact
+        uses: ./.github/workflows/reusable-workflow.yml
+        with:
+          name: simple-greeter
+
+      - name: Install wheel artifact
+        run: |
+          python -m pip install dist/simple_greeter*.whl
+
+      - name: Run app
+        run: |
+          python src/simple_app.py
