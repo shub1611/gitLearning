@@ -74,7 +74,9 @@ jobs:
           pip install -r devops/requirements/requirements.txt
       
       - name: Print artifact path
-        run: echo "${{ needs.download.outputs.artifact-path }}"
+        run: |
+          echo "${{ needs.download.outputs.artifact-path }}"
+          ls ${{ needs.download.outputs.artifact-path }}
 
       - name: Install wheel artifact
         run: |
