@@ -1,0 +1,105 @@
+name: Build Python Wheel (Flexible)
+description: Build a Python wheel using different backends and options.
+
+inputs:
+  python-version:
+    description: Python version
+    default: "3.10"
+
+  build-backend:
+    description: build, poetry, flit, setuptools
+    default: "build"
+
+  build-command:
+    description: Custom build command (will override default backend command)
+    required: false
+
+  run-tests:
+    description: Run tests?
+    default: "false"
+
+  run-lint:
+    description: Run linting?
+    default: "false"
+
+  test-requirements-file:
+    description: Path to the test requirements file
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install build tools
+      shell: bash
+      run: |
+        pip install --upgrade pip
+        case "${{ inputs.build-backend }}" in
+          build)
+            pip install build
+            ;;
+          poetry)
+            pip install poetry
+            poetry config virtualenvs.create false
+            ;;
+          flit)
+            pip install flit flit_core
+            ;;
+          setuptools)
+            pip install setuptools wheel
+            ;;
+          *)
+            echo "Unsupported backend"; exit 1
+            ;;
+        esac
+
+    - name: Run Lint (optional)
+      if: ${{ inputs.run-lint == 'true' }}
+      shell: bash
+      run: |
+        pip install black
+        black . --check
+
+    - name: Run Tests (optional)
+      if: ${{ inputs.run-tests == 'true' }}
+      shell: bash
+      run: |
+        pip install pytest
+        if [ -n "${{ inputs.test-requirements-file }}" ] && [ -f "${{ inputs.test-requirements-file }}" ]; then
+          pip install -r "${{ inputs.test-requirements-file }}"
+        fi
+        pytest
+
+    - name: Build Package
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.build-command }}" ]; then
+          echo "🔧 Using custom build command: ${{ inputs.build-command }}"
+          eval "${{ inputs.build-command }}"
+        else
+          case "${{ inputs.build-backend }}" in
+            build)
+              python -m build
+              ;;
+            poetry)
+              poetry build
+              ;;
+            flit)
+              flit build
+              ;;
+            setuptools)
+              python setup.py bdist_wheel
+              ;;
+          esac
+        fi
+
+    - name: Upload built wheel
+      uses: actions/upload-artifact@v4
+      with:
+        name: built-wheel
+        path: dist/*.whl
