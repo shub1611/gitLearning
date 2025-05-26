@@ -1,2 +1,1 @@
-def say_hello(name="World"):
-    return f"Hello, {name}!"
+from .main import say_hello
