@@ -1,4 +1,4 @@
-name: Build and Deploy wheel package
+name: Build and Deploy Custom wheel package
 # This workflow builds a wheel package and deploys it to a test environment
 on:
   # push:
