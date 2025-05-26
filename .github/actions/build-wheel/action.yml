@@ -9,6 +9,11 @@ inputs:
   build-backend:
     description: build, poetry, flit, setuptools
     default: "build"
+  
+  source-package-directory:
+    description: Path to the source package directory (where setup.cfg or pyproject.toml is located)
+    required: true
+    default: "."
 
   build-command:
     description: Custom build command (will override default backend command)
@@ -121,6 +126,7 @@ runs:
     - name: Build Package
       shell: bash
       run: |
+        cd "${{ inputs.source-package-directory }}"
         if [ -n "${{ inputs.build-command }}" ]; then
           echo "Using custom build command: ${{ inputs.build-command }}"
           eval "${{ inputs.build-command }}"
@@ -145,4 +151,4 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: built-wheel
-        path: dist/*.whl
+        path: ${{ inputs.source-package-directory }}/dist/*.whl

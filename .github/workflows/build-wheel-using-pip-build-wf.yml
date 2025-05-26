@@ -27,6 +27,7 @@ jobs:
         with:
           python-version: '3.12'
           build-backend: build
+          source-package-directory: pip-build-project
           installer: pip
           
   deploy-and-run:
