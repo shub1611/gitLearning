@@ -23,7 +23,7 @@ jobs:
           requirements-file: devops/requirements/requirements.txt
       
       - name: Build wheel and upload artifact
-        uses: shub1611/build-wheel@v1
+        uses: shub1611/build-wheel@v1-wip
         with:
           python-version: '3.12'
           build-backend: build

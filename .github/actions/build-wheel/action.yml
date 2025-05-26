@@ -126,7 +126,7 @@ runs:
     - name: Build Package
       shell: bash
       run: |
-        cd "${{ inputs.source-package-directory }}"
+        cd "${{ inputs.package-directory }}"
         if [ -n "${{ inputs.build-command }}" ]; then
           echo "Using custom build command: ${{ inputs.build-command }}"
           eval "${{ inputs.build-command }}"
