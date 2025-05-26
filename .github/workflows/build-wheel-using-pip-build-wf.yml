@@ -1,0 +1,59 @@
+name: Build and Deploy wheel package
+# This workflow builds a wheel package and deploys it to a test environment
+on:
+  # push:
+  #   branches:
+  #     - master
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+  
+      - name: Install and Cache pip dependencies
+        uses: ./.github/actions/python-dependencies
+        with:
+          requirements-file: devops/requirements/requirements.txt
+      
+      - name: Build wheel and upload artifact
+        uses: ./.github/actions/build-wheel
+        with:
+          python-version: '3.12'
+          build-backend: build
+          installer: pip
+          
+  deploy-and-run:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+  
+      - name: Install and Cache pip dependencies
+        uses: ./.github/actions/python-dependencies
+
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: my-simple-lib
+          path: dist
+
+      - name: Install wheel artifact
+        run: |
+          python -m pip install dist/my_simple_lib*.whl
+
+      - name: Run app
+        run: |
+          python run-build-app/main.py

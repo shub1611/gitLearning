@@ -14,6 +14,11 @@ inputs:
     description: Custom build command (will override default backend command)
     required: false
 
+  installer:
+    description: Choose dependency installer - pip or uv
+    required: false
+    default: "pip"
+
   run-tests:
     description: Run tests?
     default: "false"
@@ -35,23 +40,50 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
 
+    - name: Install uv if needed
+      if: ${{ inputs.installer == 'uv' }}
+      shell: bash
+      run: |
+        pip install uv
+
     - name: Install build tools
       shell: bash
       run: |
-        pip install --upgrade pip
+        if [ "${{ inputs.installer }}" = "uv" ]; then
+          uv pip install --upgrade pip
+        else
+          pip install --upgrade pip
+        fi
         case "${{ inputs.build-backend }}" in
           build)
-            pip install build
+            if [ "${{ inputs.installer }}" = "uv" ]; then
+              uv pip install build
+            else
+              pip install build
+            fi
             ;;
           poetry)
-            pip install poetry
-            poetry config virtualenvs.create false
+            if [ "${{ inputs.installer }}" = "uv" ]; then
+              uv pip install poetry
+              poetry config virtualenvs.create false
+            else
+              pip install poetry
+              poetry config virtualenvs.create false
+            fi
             ;;
           flit)
-            pip install flit flit_core
+            if [ "${{ inputs.installer }}" = "uv" ]; then
+              uv pip install flit flit_core
+            else
+              pip install flit flit_core
+            fi
             ;;
           setuptools)
-            pip install setuptools wheel
+            if [ "${{ inputs.installer }}" = "uv" ]; then
+              uv pip install setuptools wheel
+            else
+              pip install setuptools wheel
+            fi
             ;;
           *)
             echo "Unsupported backend"; exit 1
@@ -62,16 +94,27 @@ runs:
       if: ${{ inputs.run-lint == 'true' }}
       shell: bash
       run: |
-        pip install black
+        if [ "${{ inputs.installer }}" = "uv" ]; then
+          uv pip install black
+        else
+          pip install black
+        fi
         black . --check
 
     - name: Run Tests (optional)
       if: ${{ inputs.run-tests == 'true' }}
       shell: bash
       run: |
-        pip install pytest
-        if [ -n "${{ inputs.test-requirements-file }}" ] && [ -f "${{ inputs.test-requirements-file }}" ]; then
-          pip install -r "${{ inputs.test-requirements-file }}"
+        if [ "${{ inputs.installer }}" = "uv" ]; then
+          uv pip install pytest
+          if [ -n "${{ inputs.test-requirements-file }}" ] && [ -f "${{ inputs.test-requirements-file }}" ]; then
+            uv pip install -r "${{ inputs.test-requirements-file }}"
+          fi
+        else
+          pip install pytest
+          if [ -n "${{ inputs.test-requirements-file }}" ] && [ -f "${{ inputs.test-requirements-file }}" ]; then
+            pip install -r "${{ inputs.test-requirements-file }}"
+          fi
         fi
         pytest
 
@@ -79,7 +122,7 @@ runs:
       shell: bash
       run: |
         if [ -n "${{ inputs.build-command }}" ]; then
-          echo "🔧 Using custom build command: ${{ inputs.build-command }}"
+          echo "Using custom build command: ${{ inputs.build-command }}"
           eval "${{ inputs.build-command }}"
         else
           case "${{ inputs.build-backend }}" in
