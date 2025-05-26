@@ -48,7 +48,7 @@ jobs:
       - name: Download wheel artifact
         uses: actions/download-artifact@v4
         with:
-          name: my-simple-lib
+          name: built-wheel
           path: dist
 
       - name: Install wheel artifact
