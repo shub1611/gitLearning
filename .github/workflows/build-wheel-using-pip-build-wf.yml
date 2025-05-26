@@ -23,11 +23,11 @@ jobs:
           requirements-file: devops/requirements/requirements.txt
       
       - name: Build wheel and upload artifact
-        uses: ./.github/actions/build-wheel
+        uses: shub1611/build-wheel@v1
         with:
           python-version: '3.12'
           build-backend: build
-          source-package-directory: pip-build-project
+          package-directory: pip-build-project
           installer: pip
           
   deploy-and-run:

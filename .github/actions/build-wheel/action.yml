@@ -10,7 +10,7 @@ inputs:
     description: build, poetry, flit, setuptools
     default: "build"
   
-  source-package-directory:
+  package-directory:
     description: Path to the source package directory (where setup.cfg or pyproject.toml is located)
     required: true
     default: "."
